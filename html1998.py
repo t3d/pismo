@@ -4,27 +4,43 @@
 __license__ = 'GPL 3'
 __copyright__ = '2011, Tomasz Długosz <tomek3d@gmail.com>'
 
-import re
 import urllib2
 from lxml import html
 
-def resolveAbbr(text):
-
-    return text
+masterURL='http://biblia.deon.pl/PS/'
 
 def ToC():
-    url='http://biblia.deon.pl/PS/Ps_ksiegi.html'
+    url = masterURL+'Ps_ksiegi.html'
     response = urllib2.urlopen(url).read()
     doc = html.fromstring(response)
+    newTes = oldTes = []
     for data in doc.xpath('//td[@width="50%"]/table'):
-        print "Testament"
         testament= []
-        for data in data.xpath('.//tr/td/font/b'):
-            bookName=''.join(data.xpath('.//a/text()')).strip()
-            bookLink=''.join(data.xpath('.//a/@href')).replace('/Nazwa0.html','')
+        for idata in data.xpath('.//tr/td/font/b'):
+            bookName=''.join(idata.xpath('.//a/text()')).strip()
+            bookLink=''.join(idata.xpath('.//a/@href')).replace('/Nazwa0.html','')
             testament.append((bookName,bookLink))
-        for bn, bl in testament:
-            print bn, bl
+        if oldTes == []:
+            oldTes = list(testament)
+        else:
+            newTes = list(testament)
+    return (oldTes, newTes)
 
+def bookContent(bl):
+    url = masterURL+bl+'/ROZDZ.HTM'
+    response = urllib2.urlopen(url).read()
+    doc = html.fromstring(response)
+    for data in doc.xpath('//table/tr'):
+        id = ''.join(data.xpath('.//td/font/b/a/@href'))
+        if not id:
+            continue
+        name = ''.join(data.xpath('.//td/font/b/a/text()'))
+        print name, id
 
-ToC()
+#stary,nowy = ToC()
+#for bn, bl in stary:
+#    print bn, bl
+#for bn, bl in nowy:
+#    print bn, bl
+bookContent('10_2SM_')
+
