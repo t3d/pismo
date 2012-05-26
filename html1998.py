@@ -18,9 +18,13 @@ def ToC():
     doc = html.fromstring(response)
     for data in doc.xpath('//td[@width="50%"]/table'):
         print "Testament"
+        testament= []
         for data in data.xpath('.//tr/td/font/b'):
-            print ''.join(data.xpath('.//a/text()'))
-            print ''.join(data.xpath('.//a/@href'))
+            bookName=''.join(data.xpath('.//a/text()')).strip()
+            bookLink=''.join(data.xpath('.//a/@href')).replace('/Nazwa0.html','')
+            testament.append((bookName,bookLink))
+        for bn, bl in testament:
+            print bn, bl
 
 
 ToC()
