@@ -30,12 +30,15 @@ def bookContent(bl):
     url = masterURL+bl+'/ROZDZ.HTM'
     response = urllib2.urlopen(url).read()
     doc = html.fromstring(response)
+    chapters =[]
     for data in doc.xpath('//table/tr'):
         id = ''.join(data.xpath('.//td/font/b/a/@href'))
         if not id:
             continue
         name = ''.join(data.xpath('.//td/font/b/a/text()'))
-        print name, id
+#print name, re.sub('javascript\:LoadTW\(\ \'','',id)
+        chapters.append(( name, id.split('\'')[1]+'T.HTM' if 'javascript' in id else id))
+    return chapters
 
 #stary,nowy = ToC()
 #for bn, bl in stary:
