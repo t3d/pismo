@@ -36,14 +36,18 @@ def bookContent(bl):
         if not id:
             continue
         name = ''.join(data.xpath('.//td/font/b/a/text()'))
-#print name, re.sub('javascript\:LoadTW\(\ \'','',id)
         chapters.append(( name, id.split('\'')[1]+'T.HTM' if 'javascript' in id else id))
     return chapters
+
+def getBook(bn,bl):
+    print 'working on ' + bn + '...'
+    for chapterName,chapterLink in bookContent(bl):
+        print chapterName, chapterLink
 
 #stary,nowy = ToC()
 #for bn, bl in stary:
 #    print bn, bl
 #for bn, bl in nowy:
 #    print bn, bl
-bookContent('10_2SM_')
+getBook('2 Ks. Samuela', '10_2SM_')
 
