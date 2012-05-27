@@ -2,12 +2,15 @@
 # coding=utf-8
 
 __license__ = 'GPL 3'
-__copyright__ = '2011, Tomasz Długosz <tomek3d@gmail.com>'
+__copyright__ = '2012, Tomasz Długosz <tomek3d@gmail.com>'
 
+import tempfile
 import urllib2
 from lxml import html
+import shutil
 
 masterURL='http://biblia.deon.pl/PS/'
+tmpdir = tempfile.mkdtemp()
 
 def ToC():
     url = masterURL+'Ps_ksiegi.html'
@@ -44,6 +47,10 @@ def getBook(bn,bl):
     for chapterName,chapterLink in bookContent(bl):
         print chapterName, chapterLink
 
+def epubBuild():
+    print tmpdir
+
+epubBuild()
 #stary,nowy = ToC()
 #for bn, bl in stary:
 #    print bn, bl
@@ -51,3 +58,4 @@ def getBook(bn,bl):
 #    print bn, bl
 getBook('2 Ks. Samuela', '10_2SM_')
 
+shutil.rmtree(tmpdir)
