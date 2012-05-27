@@ -8,6 +8,7 @@ import tempfile
 import urllib2
 from lxml import html
 import shutil
+import os
 
 masterURL='http://biblia.deon.pl/PS/'
 tmpdir = tempfile.mkdtemp()
@@ -49,6 +50,11 @@ def getBook(bn,bl):
 
 def epubBuild():
     print tmpdir
+    os.mkdir(os.path.join(tmpdir,'META-INF'))
+    #os.mkdir(os.path.join(tmpdir,'content'))
+    file = open(os.path.join(tmpdir,'mimetype'), 'w')
+    print>>file, 'application/epub+zip'
+    file.close()
 
 epubBuild()
 #stary,nowy = ToC()
