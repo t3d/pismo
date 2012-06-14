@@ -7,6 +7,7 @@ __copyright__ = '2012, Tomasz Długosz <tomek3d@gmail.com>'
 import tempfile
 import urllib2
 from lxml import html
+from lxml.html.clean import clean_html
 import shutil
 import os
 
@@ -43,10 +44,17 @@ def bookContent(bl):
         chapters.append(( name, id.split('\'')[1]+'T.HTM' if 'javascript' in id else id))
     return chapters
 
+def saveChapter(bookLink, chapterLink):
+    url = 'http://biblia.deon.pl/PS/' + bookLink + '/' + chapterLink
+    response = urllib2.urlopen(url).read()
+    doc = html.fromstring(response)
+    print html.tostring(clean_html(doc))
+
 def getBook(bn,bl):
     print 'working on ' + bn + '...'
     for chapterName,chapterLink in bookContent(bl):
         print chapterName, chapterLink
+        #saveChapter(bl,chapterLink)
 
 def epubBuild():
     print tmpdir
@@ -56,12 +64,13 @@ def epubBuild():
     print>>file, 'application/epub+zip'
     file.close()
 
-epubBuild()
+#epubBuild()
 #stary,nowy = ToC()
 #for bn, bl in stary:
 #    print bn, bl
 #for bn, bl in nowy:
 #    print bn, bl
-getBook('2 Ks. Samuela', '10_2SM_')
+saveChapter('10_2SM_', '014T.HTM')
+#getBook('2 Ks. Samuela', '10_2SM_')
 
 shutil.rmtree(tmpdir)
