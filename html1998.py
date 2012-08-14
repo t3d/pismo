@@ -54,11 +54,21 @@ def saveChapter(bookLink, chapterLink):
     chapterfile.write(html.tostring(clean_html(doc)))
     chapterfile.close()
 
-def getBook(bn,bl):
+def saveIndex(index):
+    print 'generating INDEX...'
+    chapterfile = open('index.html', 'w')
+    chapterfile.write('<!DOCTYPE html><html><body>')
+    for bookLink, chapterName, chapterLink in index:
+        chapterfile.write('<a href=\"' + bookLink + chapterLink + '">' + chapterName.encode('utf-8') + '</a><br>')
+    chapterfile.write('</body></html>')
+    chapterfile.close()
+
+def getBook(index,bn,bl):
     print 'working on ' + bn + '...'
     for chapterName,chapterLink in bookContent(bl):
-        print chapterName, chapterLink
+        #print chapterName, chapterLink
         saveChapter(bl,chapterLink)
+        index.append((bl,chapterName,chapterLink))
 
 def epubBuild():
     print tmpdir
@@ -70,9 +80,11 @@ def epubBuild():
 
 #epubBuild()
 stary,nowy = ToC()
+index =[]
 for bn, bl in stary:
     #print bn, bl
-    getBook(bn, bl)
+    getBook(index,bn,bl)
+saveIndex(index)
 #for bn, bl in nowy:
 #    print bn, bl
 #saveChapter('10_2SM_', '014T.HTM')
