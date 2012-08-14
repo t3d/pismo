@@ -49,12 +49,16 @@ def saveChapter(bookLink, chapterLink):
     response = urllib2.urlopen(url).read()
     doc = html.fromstring(response)
     print html.tostring(clean_html(doc))
+    filename = bookLink + chapterLink
+    chapterfile = open(filename, 'w')
+    chapterfile.write(html.tostring(clean_html(doc)))
+    chapterfile.close()
 
 def getBook(bn,bl):
     print 'working on ' + bn + '...'
     for chapterName,chapterLink in bookContent(bl):
         print chapterName, chapterLink
-        #saveChapter(bl,chapterLink)
+        saveChapter(bl,chapterLink)
 
 def epubBuild():
     print tmpdir
@@ -65,12 +69,13 @@ def epubBuild():
     file.close()
 
 #epubBuild()
-#stary,nowy = ToC()
-#for bn, bl in stary:
-#    print bn, bl
+stary,nowy = ToC()
+for bn, bl in stary:
+    #print bn, bl
+    getBook(bn, bl)
 #for bn, bl in nowy:
 #    print bn, bl
-saveChapter('10_2SM_', '014T.HTM')
+#saveChapter('10_2SM_', '014T.HTM')
 #getBook('2 Ks. Samuela', '10_2SM_')
 
 shutil.rmtree(tmpdir)
