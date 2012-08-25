@@ -10,6 +10,7 @@ from lxml import html
 from lxml.html.clean import clean_html
 import shutil
 import os
+import re
 
 masterURL='http://biblia.deon.pl/PS/'
 tmpdir = tempfile.mkdtemp()
@@ -31,6 +32,31 @@ def ToC():
             newTes = list(testament)
     return (oldTes, newTes)
 
+replaceStrings = (
+    ('&#13;', ''),
+    ('&#160;', '&nbsp;'),
+    ('&#171;', '«'),
+    ('&#187;', '»'),
+    ('&#261;', 'ą'),
+    ('&#260;', 'Ą'),
+    ('&#263;', 'ć'),
+    ('&#262;', 'Ć'),
+    ('&#281;', 'ę'),
+    ('&#280;', 'Ę'),
+    ('&#322;', 'ł'),
+    ('&#321;', 'Ł'),
+    ('&#324;', 'ń'),
+    ('&#323;', 'Ń'),
+    ('&#243;', 'ó'),
+    ('&#211;', 'Ó'),
+    ('&#347;', 'ś'),
+    ('&#346;', 'Ś'),
+    ('&#380;', 'ż'),
+    ('&#377;', 'Ź'),
+    ('&#378;', 'ź'),
+    ('&#379;', 'Ż')
+)
+
 def bookContent(bl):
     url = masterURL+bl+'/ROZDZ.HTM'
     response = urllib2.urlopen(url).read()
@@ -48,10 +74,13 @@ def saveChapter(bookLink, chapterLink):
     url = 'http://biblia.deon.pl/PS/' + bookLink + '/' + chapterLink
     response = urllib2.urlopen(url).read()
     doc = html.fromstring(response)
-    print html.tostring(clean_html(doc))
+    content = html.tostring(clean_html(doc))
+    for fromPattern, toPattern in replaceStrings:
+        content = re.sub(fromPattern, toPattern, content)
+    #print content
     filename = bookLink + chapterLink
     chapterfile = open(filename, 'w')
-    chapterfile.write(html.tostring(clean_html(doc)))
+    chapterfile.write(content)
     chapterfile.close()
 
 def saveIndex(index):
@@ -84,10 +113,11 @@ index =[]
 for bn, bl in stary:
     #print bn, bl
     getBook(index,bn,bl)
-saveIndex(index)
-#for bn, bl in nowy:
-#    print bn, bl
+for bn, bl in nowy:
+    #print bn, bl
+    getBook(index,bn,bl)
+#getBook(index,'2 Ks. Samuela', '10_2SM_')
 #saveChapter('10_2SM_', '014T.HTM')
-#getBook('2 Ks. Samuela', '10_2SM_')
+saveIndex(index)
 
 shutil.rmtree(tmpdir)
