@@ -64,6 +64,10 @@ replaceStrings = (
     ('&#379;', 'Ż'),
     ('&#378;', 'ź'),
     ('&#377;', 'Ź'),
+    (r'<font size="4" color="#0000FF"><b>(\d+)</b></font>', r'<span class="numer">\1</span>'),
+    (r'<font color="#FF0000"><b>(.*?)</a></b></font>', r'<span class="przypis">\1</a></span>'),
+    ('<font size="3"><p align="JUSTIFY">', '<p>'),
+    ('<br></p></font>', '</p>'),
     (' target="Dolna"', '')
 )
 
