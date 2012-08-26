@@ -68,6 +68,8 @@ replaceStrings = (
     (r'<font color="#FF0000"><b>(.*?)</a></b></font>', r'<span class="przypis">\1</a></span>'),
     ('<font size="3"><p align="JUSTIFY">', '<p>'),
     ('<br></p></font>', '</p>'),
+    (r'<a name="0*', '<a id="w'),
+    ('<br>', '<br/>'),
     (' target="Dolna"', '')
 )
 
