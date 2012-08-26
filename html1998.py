@@ -32,6 +32,15 @@ def ToC():
             newTes = list(testament)
     return (oldTes, newTes)
 
+xhtmlHeader = '''<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+    "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="application/xhtml+xml; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="/style.css" />
+<title>'''
+
 replaceStrings = (
     ('&#13;', ''),
     ('&#160;', '&nbsp;'),
@@ -52,9 +61,10 @@ replaceStrings = (
     ('&#347;', 'ś'),
     ('&#346;', 'Ś'),
     ('&#380;', 'ż'),
-    ('&#377;', 'Ź'),
+    ('&#379;', 'Ż'),
     ('&#378;', 'ź'),
-    ('&#379;', 'Ż')
+    ('&#377;', 'Ź'),
+    (' target="Dolna"', '')
 )
 
 def bookContent(bl):
@@ -74,13 +84,14 @@ def saveChapter(bookLink, chapterLink):
     url = 'http://biblia.deon.pl/PS/' + bookLink + '/' + chapterLink
     response = urllib2.urlopen(url).read()
     doc = html.fromstring(response)
-    content = html.tostring(clean_html(doc))
+    start = 77 if 'T' in chapterLink.split('.')[0] else 114
+    content = html.tostring(clean_html(doc))[start:-6]
     for fromPattern, toPattern in replaceStrings:
         content = re.sub(fromPattern, toPattern, content)
     #print content
-    filename = bookLink + chapterLink
+    filename = bookLink + re.sub('HTM', 'xhtml', chapterLink)
     chapterfile = open(filename, 'w')
-    chapterfile.write(content)
+    chapterfile.write(xhtmlHeader + chapterLink.split('.')[0] + '</title></head>' + content + '</html>')
     chapterfile.close()
 
 def saveIndex(index):
@@ -88,7 +99,7 @@ def saveIndex(index):
     chapterfile = open('index.html', 'w')
     chapterfile.write('<!DOCTYPE html><html><body>')
     for bookLink, chapterName, chapterLink in index:
-        chapterfile.write('<a href=\"' + bookLink + chapterLink + '">' + chapterName.encode('utf-8') + '</a><br>')
+        chapterfile.write('<a href=\"' + bookLink + re.sub('HTM', 'xhtml', chapterLink) + '">' + chapterName.encode('utf-8') + '</a><br>')
     chapterfile.write('</body></html>')
     chapterfile.close()
 
