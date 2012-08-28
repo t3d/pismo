@@ -66,9 +66,10 @@ replaceStrings = (
     ('&#377;', 'Ź'),
     (r'<font size="4" color="#0000FF"><b>(\d+)</b></font>', r'<span class="numer">\1</span>'),
     (r'<font color="#FF0000"><b>(.*?)</a></b></font>', r'<span class="przypis">\1</a></span>'),
-    ('<font size="3"><p align="JUSTIFY">', '<p>'),
+    ('<font size="3"><p align="JUSTIFY">', '<p class="tresc">'),
     ('<br></p></font>', '</p>'),
     (r'<a name="0*', '<a id="w'),
+    (r'<img src="../NrRozdz/Roz0*([1-9]+\d*)\.gif" align="LEFT">', r'<span class="wielki_numer">\1</span>'),
     ('<br>', '<br/>'),
     (' target="Dolna"', '')
 )
@@ -86,7 +87,7 @@ def bookContent(bl):
         chapters.append(( name, id.split('\'')[1]+'T.HTM' if 'javascript' in id else id))
     return chapters
 
-def saveChapter(bookLink, chapterLink):
+def saveChapter(bookLink, chapterLink, bn):
     url = 'http://biblia.deon.pl/PS/' + bookLink + '/' + chapterLink
     response = urllib2.urlopen(url).read()
     doc = html.fromstring(response)
@@ -94,6 +95,8 @@ def saveChapter(bookLink, chapterLink):
     content = html.tostring(clean_html(doc))[start:-6]
     for fromPattern, toPattern in replaceStrings:
         content = re.sub(fromPattern, toPattern, content)
+    if chapterLink == '001T.HTM':
+        content = re.sub(r'<center><img src="Nazwa.gif"></center>', '<span class="tytul">' + bn.encode('utf-8') + '</span>', content)
     #print content
     filename = bookLink + re.sub('HTM', 'xhtml', chapterLink)
     chapterfile = open(filename, 'w')
@@ -112,8 +115,8 @@ def saveIndex(index):
 def getBook(index,bn,bl):
     print 'working on ' + bn + '...'
     for chapterName,chapterLink in bookContent(bl):
-        #print chapterName, chapterLink
-        saveChapter(bl,chapterLink)
+        print chapterName, chapterLink
+        saveChapter(bl,chapterLink,bn)
         index.append((bl,chapterName,chapterLink))
 
 def epubBuild():
@@ -134,7 +137,7 @@ for bn, bl in nowy:
     #print bn, bl
     getBook(index,bn,bl)
 #getBook(index,'2 Ks. Samuela', '10_2SM_')
-#saveChapter('10_2SM_', '014T.HTM')
+#saveChapter('10_2SM_', '014T.HTM', '2 Ks. Samuela')
 saveIndex(index)
 
 shutil.rmtree(tmpdir)
