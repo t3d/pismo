@@ -2,25 +2,23 @@
 # coding=utf-8
 
 __license__ = 'GPL 3'
-__copyright__ = '2012, Tomasz Długosz <tomek3d@gmail.com>'
+__copyright__ = '2012-2014, Tomasz Długosz <tomek3d@gmail.com>'
 
-import tempfile
 import urllib2
 from lxml import html
 from lxml.html.clean import clean_html
-import shutil
-import os
 import re
 
-masterURL='http://biblia.deon.pl/PS/'
-tmpdir = tempfile.mkdtemp()
+masterURL='http://biblia.deon.pl/'
 
 def ToC():
-    url = masterURL+'Ps_ksiegi.html'
+    url = masterURL
     response = urllib2.urlopen(url).read()
     doc = html.fromstring(response)
     newTes = oldTes = []
-    for data in doc.xpath('//td[@width="50%"]/table'):
+    print doc
+    '''
+    for data in doc.xpath('//div[@class="testament-label center"]/table'):
         testament= []
         for idata in data.xpath('.//tr/td/font/b'):
             bookName=''.join(idata.xpath('.//a/text()')).strip()
@@ -30,6 +28,7 @@ def ToC():
             oldTes = list(testament)
         else:
             newTes = list(testament)
+    '''
     return (oldTes, newTes)
 
 xhtmlHeader = '''<?xml version="1.0" encoding="utf-8" ?>
@@ -129,15 +128,6 @@ def getBook(index,bn,bl):
         saveChapter(bl,chapterLink,bn)
         index.append((bl,chapterName,chapterLink))
 
-def epubBuild():
-    print tmpdir
-    os.mkdir(os.path.join(tmpdir,'META-INF'))
-    #os.mkdir(os.path.join(tmpdir,'content'))
-    file = open(os.path.join(tmpdir,'mimetype'), 'w')
-    print>>file, 'application/epub+zip'
-    file.close()
-
-#epubBuild()
 stary,nowy = ToC()
 index =[]
 for bn, bl in stary:
@@ -150,5 +140,3 @@ for bn, bl in nowy:
 #saveChapter('10_2SM_', '001T.HTM', '2 Ks. Samuela')
 #saveChapter('10_2SM_', '014T.HTM', '2 Ks. Samuela')
 saveIndex(index)
-
-shutil.rmtree(tmpdir)
