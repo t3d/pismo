@@ -16,7 +16,7 @@ def ToC():
     fetcher = urllib2.build_opener()
     fetcher.addheaders = [('User-agent', 'Mozilla/5.0')]
     response = fetcher.open(url)
-    doc = html.fromstring(response)
+    doc = html.fromstring(response.read())
     newTes = oldTes = []
     print doc
     '''
