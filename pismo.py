@@ -13,7 +13,9 @@ masterURL='http://biblia.deon.pl/'
 
 def ToC():
     url = masterURL
-    response = urllib2.urlopen(url).read()
+    fetcher = urllib2.build_opener()
+    fetcher.addheaders = [('User-agent', 'Mozilla/5.0')]
+    response = fetcher.open(url)
     doc = html.fromstring(response)
     newTes = oldTes = []
     print doc
