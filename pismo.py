@@ -18,19 +18,15 @@ def ToC():
     response = fetcher.open(url)
     doc = html.fromstring(response.read())
     newTes = oldTes = []
-    print doc
-    '''
-    for data in doc.xpath('//div[@class="testament-label center"]/table'):
-        testament= []
-        for idata in data.xpath('.//tr/td/font/b'):
-            bookName=''.join(idata.xpath('.//a/text()')).strip()
-            bookLink=''.join(idata.xpath('.//a/@href')).replace('/Nazwa0.html','')
-            testament.append((bookName,bookLink))
-        if oldTes == []:
-            oldTes = list(testament)
+    bookNumber = 0
+    bookShort = ''
+    for data in doc.xpath('//select[@id="ksiega"]/option'):
+        bookNumber=''.join(data.xpath('./@value'))
+        bookShort=''.join(data.xpath('./text()')).replace(' ','')
+        if int(bookNumber) < 47 :
+            oldTes.append((bookNumber,bookShort))
         else:
-            newTes = list(testament)
-    '''
+            newTes.append((bookNumber,bookShort))
     return (oldTes, newTes)
 
 xhtmlHeader = '''<?xml version="1.0" encoding="utf-8" ?>
