@@ -83,16 +83,14 @@ replaceStrings = (
     (' target="Dolna"', '')
 )
 
-def bookContent(bl):
+def bookContent(booknumber):
     url = masterURL + 'ksiega.php?id=' + booknumber
     doc = getPage(url)
     chapters =[]
-    for data in doc.xpath('//table/tr'):
-        id = ''.join(data.xpath('.//td/font/b/a/@href'))
-        if not id:
-            continue
-        name = ''.join(data.xpath('.//td/font/b/a/text()'))
-        chapters.append(( name, id.split('\'')[1]+'T.HTM' if 'javascript' in id else id))
+    for data in doc.xpath('//select[@name="rozdzial"]/option'):
+        bookNumber=''.join(data.xpath('./@value'))
+        chapters.append(bookNumber)
+        print bookNumber
     return chapters
 
 def saveChapter(booknumber):
