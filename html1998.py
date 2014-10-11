@@ -66,7 +66,17 @@ replaceStrings = (
     ('&#377;', 'Ź'),
     (r'<font size="4" color="#0000FF"><b>(\d+)</b></font>', r'<span class="numer">\1</span>'),
     (r'<font color="#FF0000"><b>(.*?)</a></b></font>', r'<span class="przypis">\1</a></span>'),
-    ('<font size="3"><p align="JUSTIFY">', '<p class="tresc">'),
+    (r'<font color="#FF0000"><b>(.*?)</a></b></font>', r'<span class="przypis">\1</a></span>'),
+    (r'<center><font size="\+1"><font color="#008080">', '<span class="duzy_tytul">'),
+    ('</font></font></center>', '</span>'),
+    ('</font>', ''),
+    ('<p align="JUSTIFY"><font color="#0000FF"><b>', '<span class="tytul">'),
+    ('</b></font></p>', '</span>'),
+    ('</b>', '</span>'),
+    ('<font size="3"><p align="JUSTIFY">', '<p>'),
+    ('<p align="JUSTIFY">', ''),
+    (r'(</p>)+<span', '<span'),
+    (r'</span></p>', '</span>'),
     ('<br></p></font>', '</p>'),
     (r'<a name="0*', '<a id="w'),
     (r'<img src="../NrRozdz/Roz0*([1-9]+\d*)\.gif" align="LEFT">', r'<span class="wielki_numer">\1</span>'),
@@ -96,7 +106,7 @@ def saveChapter(bookLink, chapterLink, bn):
     for fromPattern, toPattern in replaceStrings:
         content = re.sub(fromPattern, toPattern, content)
     if chapterLink == '001T.HTM':
-        content = re.sub(r'<center><img src="Nazwa.gif"></center>', '<span class="tytul">' + bn.encode('utf-8') + '</span>', content)
+        content = re.sub(r'<center><img src="Nazwa.gif"></center>', '<span class="tytul_ksiegi">' + bn.encode('utf-8') + '</span>', content)
     #print content
     filename = bookLink + re.sub('HTM', 'xhtml', chapterLink)
     chapterfile = open(filename, 'w')
@@ -137,6 +147,7 @@ for bn, bl in nowy:
     #print bn, bl
     getBook(index,bn,bl)
 #getBook(index,'2 Ks. Samuela', '10_2SM_')
+#saveChapter('10_2SM_', '001T.HTM', '2 Ks. Samuela')
 #saveChapter('10_2SM_', '014T.HTM', '2 Ks. Samuela')
 saveIndex(index)
 
