@@ -116,12 +116,13 @@ def saveIndex(index):
     chapterfile.write('</body></html>')
     chapterfile.close()
 
-def getBook(index,bn,bl):
-    print 'working on ' + bn + '...'
-    for chapterName,chapterLink in bookContent(bl):
-        print chapterName, chapterLink
-        saveChapter(bl,chapterLink,bn)
-        index.append((bl,chapterName,chapterLink))
+def getBook(index,bn,bs):
+    print 'working on book number ' + bn + '...'
+    for chapterNumber in bookContent(bn):
+        print chapterNumber
+        chapterFile = str(chapterNumber) + '.xhtml'
+        saveChapter(chapterNumber,chapterFile)
+        #index.append((bl,chapterName,chapterLink))
 
 stary,nowy = ToC()
 index =[]
