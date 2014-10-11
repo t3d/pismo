@@ -90,7 +90,6 @@ def bookContent(booknumber):
     for data in doc.xpath('//select[@name="rozdzial"]/option'):
         bookNumber=''.join(data.xpath('./@value'))
         chapters.append(bookNumber)
-        print bookNumber
     return chapters
 
 def saveChapter(booknumber):
