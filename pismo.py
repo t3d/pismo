@@ -11,12 +11,14 @@ import re
 
 masterURL='http://biblia.deon.pl/'
 
-def ToC():
-    url = masterURL
+def getPage(url):
     fetcher = urllib2.build_opener()
     fetcher.addheaders = [('User-agent', 'Mozilla/5.0')]
     response = fetcher.open(url)
-    doc = html.fromstring(response.read())
+    return html.fromstring(response.read())
+
+def ToC():
+    doc = getPage(masterURL)
     newTes = oldTes = []
     bookNumber = 0
     bookShort = ''
@@ -82,9 +84,8 @@ replaceStrings = (
 )
 
 def bookContent(bl):
-    url = masterURL+bl+'/ROZDZ.HTM'
-    response = urllib2.urlopen(url).read()
-    doc = html.fromstring(response)
+    url = masterURL + 'ksiega.php?id=' + booknumber
+    doc = getPage(url)
     chapters =[]
     for data in doc.xpath('//table/tr'):
         id = ''.join(data.xpath('.//td/font/b/a/@href'))
@@ -94,10 +95,9 @@ def bookContent(bl):
         chapters.append(( name, id.split('\'')[1]+'T.HTM' if 'javascript' in id else id))
     return chapters
 
-def saveChapter(bookLink, chapterLink, bn):
-    url = 'http://biblia.deon.pl/PS/' + bookLink + '/' + chapterLink
-    response = urllib2.urlopen(url).read()
-    doc = html.fromstring(response)
+def saveChapter(booknumber):
+    url = 'http://biblia.deon.pl/ksiega.php?id=' + booknumber
+    doc = getPage(url)
     start = 77 if 'T' in chapterLink.split('.')[0] else 114
     content = html.tostring(clean_html(doc))[start:-6]
     for fromPattern, toPattern in replaceStrings:
