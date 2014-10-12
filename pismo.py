@@ -97,29 +97,31 @@ def saveChapter(chapterNumber,chapterFile):
 
 def saveIndex(index):
     print 'generating INDEX...'
-    chapterfile = open('index.html', 'w')
-    chapterfile.write('<!DOCTYPE html><html><body>')
-    for bookLink, chapterName, chapterLink in index:
-        chapterfile.write('<a href=\"' + bookLink + re.sub('HTM', 'xhtml', chapterLink) + '">' + chapterName.encode('utf-8') + '</a><br>')
-    chapterfile.write('</body></html>')
-    chapterfile.close()
+    indexfile = open('index.xhtml', 'w')
+    indexfile.write(xhtmlHeader + 'index</title></head><body>')
+    for chapterFile, bs, chapterCounter in index:
+        indexfile.write('<a href=\"' + chapterFile + '">' + bs.encode('utf-8') + str(chapterCounter) + '</a><br/>\n')
+    indexfile.write('</body></html>')
+    indexfile.close()
 
 def getBook(index,bn,bs):
     print 'working on book number ' + bn + '...'
+    chapterCounter = 1
     for chapterNumber in bookContent(bn):
         chapterFile = str(chapterNumber) + '.xhtml'
         saveChapter(chapterNumber,chapterFile)
-        #index.append((bl,chapterName,chapterLink))
+        index.append((chapterFile,bs,chapterCounter))
+        chapterCounter+=1
 
 stary,nowy = ToC()
 index =[]
-for bn, bl in stary:
-    #print bn, bl
-    getBook(index,bn,bl)
-for bn, bl in nowy:
-    #print bn, bl
-    getBook(index,bn,bl)
-#getBook(index,'2 Ks. Samuela', '10_2SM_')
+for bn, bs in stary:
+    #print bn, bs
+    getBook(index,bn,bs)
+for bn, bs in nowy:
+    #print bn, bs
+    getBook(index,bn,bs)
+#getBook(index,'3', 'Kpł')
 #saveChapter('10_2SM_', '001T.HTM', '2 Ks. Samuela')
 #saveChapter('10_2SM_', '014T.HTM', '2 Ks. Samuela')
 saveIndex(index)
