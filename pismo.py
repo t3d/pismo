@@ -101,7 +101,7 @@ def saveChapter(chapterNumber,chapterFile):
         content = re.sub(fromPattern, toPattern, content)
     print content
     file = open(chapterFile, 'w')
-    file.write(xhtmlHeader + str(chapterNumber) + '</title></head>' + content + '</html>')
+    file.write(xhtmlHeader + str(chapterNumber) + '</title></head><body>' + content + '</body></html>')
     file.close()
 
 def saveIndex(index):
