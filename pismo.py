@@ -92,20 +92,17 @@ def bookContent(booknumber):
         chapters.append(bookNumber)
     return chapters
 
-def saveChapter(booknumber):
-    url = 'http://biblia.deon.pl/ksiega.php?id=' + booknumber
+def saveChapter(chapterNumber,chapterFile):
+    url = masterURL + 'rozdzial.php?id=' + chapterNumber
     doc = getPage(url)
-    start = 77 if 'T' in chapterLink.split('.')[0] else 114
-    content = html.tostring(clean_html(doc))[start:-6]
+    content=html.tostring(doc.xpath('.//div[@class="tresc"]')[0])
+    footnotes=doc.xpath('.//div[@class="footnotes-content"]')
     for fromPattern, toPattern in replaceStrings:
         content = re.sub(fromPattern, toPattern, content)
-    if chapterLink == '001T.HTM':
-        content = re.sub(r'<center><img src="Nazwa.gif"></center>', '<span class="tytul_ksiegi">' + bn.encode('utf-8') + '</span>', content)
-    #print content
-    filename = bookLink + re.sub('HTM', 'xhtml', chapterLink)
-    chapterfile = open(filename, 'w')
-    chapterfile.write(xhtmlHeader + chapterLink.split('.')[0] + '</title></head>' + content + '</html>')
-    chapterfile.close()
+    print content
+    file = open(chapterFile, 'w')
+    file.write(xhtmlHeader + str(chapterNumber) + '</title></head>' + content + '</html>')
+    file.close()
 
 def saveIndex(index):
     print 'generating INDEX...'
