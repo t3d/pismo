@@ -19,7 +19,8 @@ def getPage(url):
 
 def ToC():
     doc = getPage(masterURL)
-    newTes = oldTes = []
+    newTes = []
+    oldTes = []
     bookNumber = 0
     bookShort = ''
     for data in doc.xpath('//select[@id="ksiega"]/option'):
