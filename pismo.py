@@ -63,24 +63,15 @@ replaceStrings = (
     ('&#379;', 'Ż'),
     ('&#378;', 'ź'),
     ('&#377;', 'Ź'),
-    (r'<font size="4" color="#0000FF"><b>(\d+)</b></font>', r'<span class="numer">\1</span>'),
-    (r'<font color="#FF0000"><b>(.*?)</a></b></font>', r'<span class="przypis">\1</a></span>'),
-    (r'<font color="#FF0000"><b>(.*?)</a></b></font>', r'<span class="przypis">\1</a></span>'),
-    (r'<center><font size="\+1"><font color="#008080">', '<span class="duzy_tytul">'),
     ('</font></font></center>', '</span>'),
     ('</font>', ''),
-    ('<p align="JUSTIFY"><font color="#0000FF"><b>', '<span class="tytul">'),
     ('</b></font></p>', '</span>'),
     ('</b>', '</span>'),
-    ('<font size="3"><p align="JUSTIFY">', '<p>'),
-    ('<p align="JUSTIFY">', ''),
     (r'(</p>)+<span', '<span'),
     (r'</span></p>', '</span>'),
     ('<br></p></font>', '</p>'),
     (r'<a name="0*', '<a id="w'),
-    (r'<img src="../NrRozdz/Roz0*([1-9]+\d*)\.gif" align="LEFT">', r'<span class="wielki_numer">\1</span>'),
-    ('<br>', '<br/>'),
-    (' target="Dolna"', '')
+    ('<br>', '<br/>')
 )
 
 def bookContent(booknumber):
