@@ -90,7 +90,6 @@ def saveChapter(chapterNumber,chapterFile):
     footnotes=doc.xpath('.//div[@class="footnotes-content"]')
     for fromPattern, toPattern in replaceStrings:
         content = re.sub(fromPattern, toPattern, content)
-    print content
     file = open(chapterFile, 'w')
     file.write(xhtmlHeader + str(chapterNumber) + '</title></head><body>' + content + '</body></html>')
     file.close()
@@ -107,7 +106,6 @@ def saveIndex(index):
 def getBook(index,bn,bs):
     print 'working on book number ' + bn + '...'
     for chapterNumber in bookContent(bn):
-        print chapterNumber
         chapterFile = str(chapterNumber) + '.xhtml'
         saveChapter(chapterNumber,chapterFile)
         #index.append((bl,chapterName,chapterLink))
