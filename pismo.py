@@ -79,10 +79,11 @@ def bookContent(booknumber):
     url = masterURL + 'ksiega.php?id=' + booknumber
     doc = getPage(url)
     chapters =[]
+    bookName = doc.xpath('//div[@class="book-label"]/text()')[0]
     for data in doc.xpath('//select[@name="rozdzial"]/option'):
         bookNumber=''.join(data.xpath('./@value'))
         chapters.append(bookNumber)
-    return chapters
+    return (chapters,bookName)
 
 def saveChapter(chapterNumber,chapterFile):
     url = masterURL + 'rozdzial.php?id=' + chapterNumber
@@ -99,29 +100,32 @@ def saveIndex(index):
     print 'generating INDEX...'
     indexfile = open('index.xhtml', 'w')
     indexfile.write(xhtmlHeader + 'index</title></head><body>')
-    for chapterFile, bs, chapterCounter in index:
-        indexfile.write('<a href=\"' + chapterFile + '">' + bs.encode('utf-8') + str(chapterCounter) + '</a><br/>\n')
+    for chapterFile,chapterCounter,bookTitle in index:
+        if chapterCounter == 1 :
+            indexfile.write(bookTitle.encode('utf-8')  + '<br/>')
+        indexfile.write('<a href=\"' + chapterFile + '">' + str(chapterCounter) + '</a> ')
     indexfile.write('</body></html>')
     indexfile.close()
 
-def getBook(index,bn,bs):
-    print 'working on book number ' + bn + '...'
+def getBook(index,bn):
+    chapterNumbers,bookTitle= bookContent(bn)
+    print 'Working on book ' + bookTitle + '...'
     chapterCounter = 1
-    for chapterNumber in bookContent(bn):
+    for chapterNumber in chapterNumbers:
         chapterFile = str(chapterNumber) + '.xhtml'
         saveChapter(chapterNumber,chapterFile)
-        index.append((chapterFile,bs,chapterCounter))
+        index.append((chapterFile,chapterCounter,bookTitle))
         chapterCounter+=1
 
 stary,nowy = ToC()
 index =[]
 for bn, bs in stary:
     #print bn, bs
-    getBook(index,bn,bs)
+    getBook(index,bn)
 for bn, bs in nowy:
     #print bn, bs
-    getBook(index,bn,bs)
-#getBook(index,'3', 'Kpł')
+    getBook(index,bn)
+#getBook(index,'3')
 #saveChapter('10_2SM_', '001T.HTM', '2 Ks. Samuela')
 #saveChapter('10_2SM_', '014T.HTM', '2 Ks. Samuela')
 saveIndex(index)
