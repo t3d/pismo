@@ -126,6 +126,4 @@ for bn, bs in nowy:
     #print bn, bs
     getBook(index,bn)
 #getBook(index,'3')
-#saveChapter('10_2SM_', '001T.HTM', '2 Ks. Samuela')
-#saveChapter('10_2SM_', '014T.HTM', '2 Ks. Samuela')
 saveIndex(index)
