@@ -38,8 +38,18 @@ xhtmlHeader = '''<?xml version="1.0" encoding="utf-8" ?>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=utf-8" />
-<link rel="stylesheet" type="text/css" href="/style.css" />
+<link rel="stylesheet" type="text/css" href="style.css" />
 <title>'''
+
+css = '''
+sup {font-size: 0.83em; vertical-align: super; line-height: 0; }
+.tytul1 {font-weight:bold; text-align:center; }
+.tytul2 {font-size:1.2em; text-align:center; }
+.miedzytytul1 {font-weight:bold; text-align:center;}
+.miedzytytul2 {font-style:italic; text-align:center;}
+.miedzytytul3 {font-style:italic; font-size:0.8em; margin-left:-10px}
+.werset {font-weight:bold; font-size: 0.6em; }
+'''
 
 replaceStrings = (
     ('&#13;', ''),
@@ -107,6 +117,11 @@ def saveIndex(index):
     indexfile.write('</body></html>')
     indexfile.close()
 
+def saveCss():
+    cssfile = open('style.css', 'w')
+    cssfile.write(css)
+    cssfile.close()
+
 def getBook(index,bn):
     chapterNumbers,bookTitle= bookContent(bn)
     print 'Working on book ' + bookTitle + '...'
@@ -127,3 +142,4 @@ for bn, bs in nowy:
     getBook(index,bn)
 #getBook(index,'3')
 saveIndex(index)
+saveCss()
