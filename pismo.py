@@ -8,8 +8,12 @@ import urllib2
 from lxml import html
 from lxml.html.clean import clean_html
 import re
+import tempfile
+import shutil
+import os
 
 masterURL='http://biblia.deon.pl/'
+tmpdir = tempfile.mkdtemp()
 
 def getPage(url):
     fetcher = urllib2.build_opener()
@@ -133,6 +137,15 @@ def getBook(index,bn):
         index.append((chapterFile,chapterCounter,bookTitle))
         chapterCounter+=1
 
+def epubBuild():
+    print tmpdir
+    os.mkdir(os.path.join(tmpdir,'META-INF'))
+    #os.mkdir(os.path.join(tmpdir,'content'))
+    file = open(os.path.join(tmpdir,'mimetype'), 'w')
+    print>>file, 'application/epub+zip'
+    file.close()
+
+epubBuild()
 stary,nowy = ToC()
 index =[]
 for bn, bs in stary:
@@ -144,3 +157,4 @@ for bn, bs in nowy:
 #getBook(index,'3')
 saveIndex(index)
 saveCss()
+shutil.rmtree(tmpdir)
