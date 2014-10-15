@@ -79,6 +79,10 @@ replaceStrings = (
     ('&#379;', 'Ż'),
     ('&#378;', 'ź'),
     ('&#377;', 'Ź'),
+    ('<br>', '<br/>')
+)
+
+replaceStringsContent = (
     ('</font></font></center>', '</span>'),
     ('</font>', ''),
     ('</b></font></p>', '</span>'),
@@ -87,7 +91,12 @@ replaceStrings = (
     (r'</span></p>', '</span>'),
     ('<br></p></font>', '</p>'),
     (r'<a name="0*', '<a id="w'),
-    ('<br>', '<br/>')
+    (r'/rozdzial\.php\?id=(.*?)#', r'#')
+)
+
+replaceStringsFootnotes = (
+    ('a name=', 'a href='),
+    (r'/rozdzial\.php\?id=(.*?)#', r'#W')
 )
 
 def bookContent(booknumber):
@@ -100,14 +109,16 @@ def bookContent(booknumber):
         chapters.append(bookNumber)
     return (chapters,bookName)
 
-def saveChapter(chapterNumber,chapterFile):
+def saveChapter(chapterNumber,chapterFile,footnoteSeq):
     url = masterURL + 'rozdzial.php?id=' + chapterNumber
     doc = getPage(url)
     content=html.tostring(doc.xpath('.//div[@class="tresc"]')[0])
-    footnotes=doc.xpath('.//div[@class="footnotes-content"]')
-    for fromPattern, toPattern in replaceStrings:
+    footnotes=(doc.xpath('.//div[@class="footnotes-content"]/p'))
+    for fromPattern, toPattern in replaceStrings + replaceStringsContent:
         content = re.sub(fromPattern, toPattern, content)
     file = open(chapterFile, 'w')
+    for footnote in footnotes:
+        footnoteSeq.append(html.tostring(footnote))
     file.write(xhtmlHeader + str(chapterNumber) + '</title></head><body>' + content + '</body></html>')
     file.close()
 
@@ -122,18 +133,29 @@ def saveIndex(index):
     indexfile.write('</body></html>')
     indexfile.close()
 
+def saveFootnotes(footnoteSeq):
+    print 'saving footnotes...'
+    footnotefile = open('footnotes.xhtml', 'w')
+    footnotefile.write(xhtmlHeader + 'index</title></head><body>')
+    for footnote in footnoteSeq:
+        for fromPattern, toPattern in replaceStrings + replaceStringsFootnotes:
+            footnote = re.sub(fromPattern, toPattern, footnote)
+        footnotefile.write(footnote)
+    footnotefile.write('</body></html>')
+    footnotefile.close()
+
 def saveCss():
     cssfile = open('style.css', 'w')
     cssfile.write(css)
     cssfile.close()
 
-def getBook(index,bn):
+def getBook(index,footnoteSeq,bn):
     chapterNumbers,bookTitle= bookContent(bn)
     print 'Working on book ' + bookTitle + '...'
     chapterCounter = 1
     for chapterNumber in chapterNumbers:
         chapterFile = str(chapterNumber) + '.xhtml'
-        saveChapter(chapterNumber,chapterFile)
+        saveChapter(chapterNumber,chapterFile,footnoteSeq)
         index.append((chapterFile,chapterCounter,bookTitle))
         chapterCounter+=1
 
@@ -147,14 +169,17 @@ def epubBuild():
 
 epubBuild()
 stary,nowy = ToC()
-index =[]
+index = []
+footnoteSeq = []
 for bn, bs in stary:
     #print bn, bs
-    getBook(index,bn)
+    getBook(index,footnoteSeq,bn)
 for bn, bs in nowy:
     #print bn, bs
-    getBook(index,bn)
-#getBook(index,'3')
+    getBook(index,footnoteSeq,bn)
+#getBook(index,footnoteSeq,'3')
 saveIndex(index)
+if footnoteSeq :
+    saveFootnotes(footnoteSeq)
 saveCss()
 shutil.rmtree(tmpdir)
