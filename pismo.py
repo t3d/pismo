@@ -6,7 +6,6 @@ __copyright__ = '2012-2014, Tomasz Długosz <tomek3d@gmail.com>'
 
 import urllib2
 from lxml import html
-from lxml.html.clean import clean_html
 import re
 import tempfile
 import shutil
