@@ -81,17 +81,6 @@ replaceStrings = (
     ('<br>', '<br/>')
 )
 
-replaceStringsContent = (
-    ('</font></font></center>', '</span>'),
-    ('</font>', ''),
-    ('</b></font></p>', '</span>'),
-    ('</b>', '</span>'),
-    (r'(</p>)+<span', '<span'),
-    (r'</span></p>', '</span>'),
-    ('<br></p></font>', '</p>'),
-    (r'<a name="0*', '<a id="w'),
-    (r'/rozdzial\.php\?id=(.*?)#', r'#')
-)
 
 replaceStringsFootnotes = (
     ('a name=', 'a href='),
@@ -109,6 +98,17 @@ def bookContent(booknumber):
     return (chapters,bookName)
 
 def saveChapter(chapterNumber,chapterFile,footnoteSeq):
+    replaceStringsContent = (
+        ('</font></font></center>', '</span>'),
+        ('</font>', ''),
+        ('</b></font></p>', '</span>'),
+        ('</b>', '</span>'),
+        (r'(</p>)+<span', '<span'),
+        (r'</span></p>', '</span>'),
+        ('<br></p></font>', '</p>'),
+        (r'<a name="0*', '<a id="w'),
+        (r'/rozdzial\.php\?id=(.*?)#', r'footnotes.xhtml#'+ chapterNumber )
+    )
     url = masterURL + 'rozdzial.php?id=' + chapterNumber
     doc = getPage(url)
     content=html.tostring(doc.xpath('.//div[@class="tresc"]')[0])
@@ -117,7 +117,8 @@ def saveChapter(chapterNumber,chapterFile,footnoteSeq):
         content = re.sub(fromPattern, toPattern, content)
     file = open(chapterFile, 'w')
     for footnote in footnotes:
-        footnoteSeq.append(html.tostring(footnote))
+        footnote = re.sub(r'#WW', chapterNumber + r'.xtml#WW',html.tostring(footnote))
+        footnoteSeq.append(footnote)
     file.write(xhtmlHeader + str(chapterNumber) + '</title></head><body>' + content + '</body></html>')
     file.close()
 
