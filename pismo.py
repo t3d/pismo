@@ -145,12 +145,12 @@ def saveCss():
     cssfile.write(css)
     cssfile.close()
 
-def getBook(index,footnoteSeq,bn,bs):
-    chapterNumbers,bookTitle= bookContent(bn)
+def getBook(index,footnoteSeq,bookNumber,bookShort):
+    chapterNumbers,bookTitle= bookContent(bookNumber)
     print 'Working on book ' + bookTitle + '...'
     chapterCounter = 1
     for chapterNumber in chapterNumbers:
-        chapterFile = bs + str(chapterCounter) + '.xhtml'
+        chapterFile = bookShort + str(chapterCounter) + '.xhtml'
         saveChapter(chapterNumber,chapterFile,footnoteSeq)
         index.append((chapterFile,chapterCounter,bookTitle))
         chapterCounter+=1
@@ -158,12 +158,12 @@ def getBook(index,footnoteSeq,bn,bs):
 stary,nowy = ToC()
 index = []
 footnoteSeq = []
-for bn, bs in stary:
-    #print bn, bs
-    getBook(index,footnoteSeq,bn,bs)
-for bn, bs in nowy:
-    #print bn, bs
-    getBook(index,footnoteSeq,bn,bs)
+for bookNumber, bookShort in stary:
+    #print bookNumber, bookShort
+    getBook(index,footnoteSeq,bookNumber,bookShort)
+for bookNumber, bookShort in nowy:
+    #print bookNumber, bookShort
+    getBook(index,footnoteSeq,bookNumber,bookShort)
 #getBook(index,footnoteSeq,'3','Kpł')
 saveIndex(index)
 if footnoteSeq :
