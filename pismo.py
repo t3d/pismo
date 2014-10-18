@@ -84,7 +84,7 @@ replaceStrings = (
 
 replaceStringsFootnotes = (
     ('a name=', 'a href='),
-    (r'otworz\.php\?skrot=(.*?)%20(.*?),', r'\1\2#WW'),
+    (r'otworz\.php\?skrot=(.*?)%20(.*?),', r'\1\2.xhtml#WW'),
     (r'/rozdzial\.php\?id=(.*?)#', r'#W')
 )
 
