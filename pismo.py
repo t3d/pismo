@@ -154,6 +154,10 @@ def getBook(index,footnoteSeq,bookNumber,bookShort):
         chapterFile = bookShort + str(chapterCounter) + '.xhtml'
         saveChapter(chapterNumber,chapterFile,footnoteSeq)
         index.append((chapterFile,chapterCounter,bookTitle))
+        '''
+        if chapterCounter == 5:
+            break
+        '''
         chapterCounter+=1
 
 stary,nowy = ToC()
