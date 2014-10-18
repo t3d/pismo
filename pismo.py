@@ -81,7 +81,7 @@ replaceStrings = (
 replaceStringsFootnotes = (
     ('a name=', 'a href='),
     (r'otworz\.php\?skrot=(.*?)%20(.*?),', r'\1\2.xhtml#WW'),
-    (r'/rozdzial\.php\?id=(.*?)#', r'#W')
+    (r'%20([1-9]{1,2}\.xhtml)', r'\1')
 )
 
 def bookContent(booknumber):
@@ -114,7 +114,7 @@ def saveChapter(chapterNumber,chapterFile,footnoteSeq):
         content = re.sub(fromPattern, toPattern, content)
     file = open(chapterFile, 'w')
     for footnote in footnotes:
-        footnote = re.sub(r'#WW', chapterNumber + r'.xtml#WW',html.tostring(footnote))
+        footnote = re.sub(r'/rozdzial\.php\?id=(.*?)#', chapterFile + r'#W',html.tostring(footnote))
         footnoteSeq.append(footnote)
     file.write(xhtmlHeader + str(chapterNumber) + '</title></head><body>' + content + '</body></html>')
     file.close()
