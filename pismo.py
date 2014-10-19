@@ -24,7 +24,7 @@ def ToC():
     bookShort = ''
     for data in doc.xpath('//select[@id="ksiega"]/option'):
         bookNumber=''.join(data.xpath('./@value'))
-        bookShort=''.join(data.xpath('./text()')).replace(' ','')
+        bookShort=''.join(data.xpath('./text()')).replace(' ','').encode('utf-8')
         if int(bookNumber) < 47 :
             oldTes.append((bookNumber,bookShort))
         else:
