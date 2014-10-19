@@ -129,7 +129,7 @@ def saveIndex(index):
     indexfile.write(xhtmlHeader + 'index</title></head><body>')
     for chapterFile,chapterCounter,bookTitle in index:
         if chapterCounter == 1 :
-            indexfile.write(bookTitle.encode('utf-8')  + '<br/>')
+            indexfile.write('<br/>' + bookTitle.encode('utf-8')  + '<br/>')
         indexfile.write('<a href=\"' + chapterFile + '">' + str(chapterCounter) + '</a> ')
     indexfile.write('</body></html>')
     indexfile.close()
