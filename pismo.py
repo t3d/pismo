@@ -10,6 +10,12 @@ import re
 import tempfile
 import shutil
 import os
+import zipfile
+try:
+    import zlib
+    compression = zipfile.ZIP_DEFLATED
+except:
+    compression = zipfile.ZIP_STORED
 
 masterURL='http://biblia.deon.pl/'
 tmpdir = tempfile.mkdtemp()
@@ -167,10 +173,26 @@ def getBook(index,footnoteSeq,bookNumber,bookShort):
 def epubBuild():
     print tmpdir
     os.mkdir(os.path.join(tmpdir,'META-INF'))
-    #os.mkdir(os.path.join(tmpdir,'content'))
+    os.mkdir(os.path.join(tmpdir,'OEBPS'))
     file = open(os.path.join(tmpdir,'mimetype'), 'w')
     print>>file, 'application/epub+zip'
     file.close()
+    file = open(os.path.join(tmpdir,'META-INF','container.xml'), 'w')
+    print>>file, '''<container xmlns="urn:oasis:names:tc:opendocument:xmlns:container" version="1.0">
+    <rootfiles>
+    <rootfile full-path="OEBPS/content.opf" media-type="application/oebps-package+xml"/>
+    </rootfiles>
+    </container>'''
+    file.close()
+
+def epubZip():
+    print "zipping..."
+    zf = zipfile.ZipFile('pismo.epub', mode='w')
+    try:
+        for filename in os.listdir(tmpdir):
+            zf.write(os.path.join(tmpdir,filename), compress_type=compression)
+    finally:
+        zf.close()
 
 epubBuild()
 stary,nowy = ToC()
@@ -187,4 +209,5 @@ saveIndex(index)
 if footnoteSeq :
     saveFootnotes(footnoteSeq)
 saveCss()
+epubZip()
 shutil.rmtree(tmpdir)
