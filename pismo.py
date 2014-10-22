@@ -122,7 +122,7 @@ def saveChapter(chapterNumber,chapterFile,footnoteSeq):
     footnotes=(doc.xpath('.//div[@class="footnotes-content"]/p'))
     for fromPattern, toPattern in replaceStrings + replaceStringsContent:
         content = re.sub(fromPattern, toPattern, content)
-    file = open(chapterFile, 'w')
+    file = open(os.path.join(tmpdir,chapterFile), 'w')
     for footnote in footnotes:
         footnote = re.sub(r'/rozdzial\.php\?id=(.*?)#', chapterFile + r'#W',html.tostring(footnote))
         footnoteSeq.append(footnote)
@@ -131,7 +131,7 @@ def saveChapter(chapterNumber,chapterFile,footnoteSeq):
 
 def saveIndex(index):
     print 'generating INDEX...'
-    indexfile = open('index.xhtml', 'w')
+    indexfile = open(os.path.join(tmpdir,'index.xhtml'), 'w')
     indexfile.write(xhtmlHeader + 'index</title></head><body>')
     for chapterFile,chapterCounter,bookTitle in index:
         if chapterCounter == 1 :
@@ -142,7 +142,7 @@ def saveIndex(index):
 
 def saveFootnotes(footnoteSeq):
     print 'saving footnotes...'
-    footnotefile = open('footnotes.xhtml', 'w')
+    footnotefile = open(os.path.join(tmpdir,'footnotes.xhtml'), 'w')
     footnotefile.write(xhtmlHeader + 'index</title></head><body>')
     for footnote in footnoteSeq:
         for fromPattern, toPattern in replaceStrings + replaceStringsFootnotes:
@@ -152,7 +152,7 @@ def saveFootnotes(footnoteSeq):
     footnotefile.close()
 
 def saveCss():
-    cssfile = open('style.css', 'w')
+    cssfile = open(os.path.join(tmpdir,'style.css'), 'w')
     cssfile.write(css)
     cssfile.close()
 
