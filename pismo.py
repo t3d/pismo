@@ -85,7 +85,8 @@ replaceStrings = (
 replaceStringsFootnotes = (
     ('a name=', 'a href='),
     (r'otworz\.php\?skrot=(.*?)%20(.*?),', r'\1\2.xhtml#WW'),
-    #TODO: fix broken links to Kpł and Łk
+    (r'Kp%C5%82([0-9]{1,2}.xhtml)', r'Kp\1'),
+    (r'%C5%81(k[0-9]{1,2}.xhtml)', r'\1'),
     (r'%20([0-9]{1,2}\.xhtml)', r'\1')
 )
 
