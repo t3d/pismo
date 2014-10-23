@@ -6,6 +6,7 @@ __copyright__ = '2012-2014, Tomasz Długosz <tomek3d@gmail.com>'
 
 import urllib2
 from lxml import html
+import unicodedata
 import re
 import tempfile
 import shutil
@@ -26,15 +27,18 @@ def getPage(url):
     response = fetcher.open(url)
     return html.fromstring(response.read())
 
+def normalizeUnicode(name):
+    return unicodedata.normalize('NFKD', name).encode('ascii','ignore')
+
 def ToC():
     doc = getPage(masterURL)
     newTes = []
     oldTes = []
     bookNumber = 0
-    bookShort = ''
+    bookShort = u''
     for data in doc.xpath('//select[@id="ksiega"]/option'):
         bookNumber=''.join(data.xpath('./@value'))
-        bookShort=''.join(data.xpath('./text()')).replace(' ','').encode('utf-8')
+        bookShort=u''.join(data.xpath('./text()')).replace(' ','')
         if int(bookNumber) < 47 :
             oldTes.append((bookNumber,bookShort))
         else:
@@ -91,7 +95,9 @@ replaceStrings = (
 replaceStringsFootnotes = (
     ('a name=', 'a href='),
     (r'otworz\.php\?skrot=(.*?)%20(.*?),', r'\1\2.xhtml#WW'),
-    (r'%20([1-9]{1,2}\.xhtml)', r'\1')
+    (r'Kp%C5%82([0-9]{1,2}.xhtml)', r'Kp\1'),
+    (r'%C5%81(k[0-9]{1,2}.xhtml)', r'\1'),
+    (r'%20([0-9]{1,2}\.xhtml)', r'\1')
 )
 
 def bookContent(booknumber):
@@ -161,7 +167,7 @@ def getBook(index,footnoteSeq,bookNumber,bookShort):
     print 'Working on book ' + bookTitle + '...'
     chapterCounter = 1
     for chapterNumber in chapterNumbers:
-        chapterFile = bookShort + str(chapterCounter) + '.xhtml'
+        chapterFile = normalizeUnicode(bookShort) + str(chapterCounter) + '.xhtml'
         saveChapter(chapterNumber,chapterFile,footnoteSeq)
         index.append((chapterFile,chapterCounter,bookTitle))
         '''
@@ -204,7 +210,7 @@ for bookNumber, bookShort in stary:
 for bookNumber, bookShort in nowy:
     #print bookNumber, bookShort
     getBook(index,footnoteSeq,bookNumber,bookShort)
-#getBook(index,footnoteSeq,'3','Kpł')
+#getBook(index,footnoteSeq,'3',u'Kpł')
 saveIndex(index)
 if footnoteSeq :
     saveFootnotes(footnoteSeq)
