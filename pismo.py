@@ -128,7 +128,7 @@ def saveChapter(chapterNumber,chapterFile,footnoteSeq):
     footnotes=(doc.xpath('.//div[@class="footnotes-content"]/p'))
     for fromPattern, toPattern in replaceStrings + replaceStringsContent:
         content = re.sub(fromPattern, toPattern, content)
-    file = open(os.path.join(tmpdir,chapterFile), 'w')
+    file = open(os.path.join(tmpdir, 'OEBPS', chapterFile), 'w')
     for footnote in footnotes:
         footnote = re.sub(r'/rozdzial\.php\?id=(.*?)#', chapterFile + r'#W',html.tostring(footnote))
         footnoteSeq.append(footnote)
@@ -137,7 +137,7 @@ def saveChapter(chapterNumber,chapterFile,footnoteSeq):
 
 def saveIndex(index):
     print 'generating INDEX...'
-    indexfile = open(os.path.join(tmpdir,'index.xhtml'), 'w')
+    indexfile = open(os.path.join(tmpdir, 'OEBPS', 'index.xhtml'), 'w')
     indexfile.write(xhtmlHeader + 'index</title></head><body>')
     for chapterFile,chapterCounter,bookTitle in index:
         if chapterCounter == 1 :
@@ -148,7 +148,7 @@ def saveIndex(index):
 
 def saveFootnotes(footnoteSeq):
     print 'saving footnotes...'
-    footnotefile = open(os.path.join(tmpdir,'footnotes.xhtml'), 'w')
+    footnotefile = open(os.path.join(tmpdir, 'OEBPS', 'footnotes.xhtml'), 'w')
     footnotefile.write(xhtmlHeader + 'index</title></head><body>')
     for footnote in footnoteSeq:
         for fromPattern, toPattern in replaceStrings + replaceStringsFootnotes:
@@ -158,7 +158,7 @@ def saveFootnotes(footnoteSeq):
     footnotefile.close()
 
 def saveCss():
-    cssfile = open(os.path.join(tmpdir,'style.css'), 'w')
+    cssfile = open(os.path.join(tmpdir, 'OEBPS', 'style.css'), 'w')
     cssfile.write(css)
     cssfile.close()
 
@@ -197,6 +197,10 @@ def epubZip():
     try:
         for filename in os.listdir(tmpdir):
             zf.write(os.path.join(tmpdir,filename), filename, compression)
+        for filename in os.listdir(os.path.join(tmpdir,'OEBPS')):
+            zf.write(os.path.join(tmpdir,'OEBPS',filename), os.path.join('OEBPS', filename), compression)
+        for filename in os.listdir(os.path.join(tmpdir,'META-INF')):
+            zf.write(os.path.join(tmpdir,'META-INF',filename), os.path.join('META-INF', filename), compression)
     finally:
         zf.close()
 
