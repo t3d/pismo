@@ -191,6 +191,18 @@ def epubBuild():
     </container>'''
     file.close()
 
+def craftOpf():
+    file = open(os.path.join(tmpdir, 'OEBPS', 'content.opf'), 'w')
+    print>>file, '''<?xml version="1.0" encoding="UTF-8"??>
+    <package xmlns="http://www.idpf.org/2007/opf" unique-identifier="BookID" version="2.0" >
+        <metadata xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:opf="http://www.idpf.org/2007/opf">
+    '''
+    print>>file, '''    </manifest>
+    <spine toc="ncx">
+    '''
+    print>>file, '''</spine></package>'''
+    file.close()
+
 def epubZip():
     print "zipping..."
     zf = zipfile.ZipFile('pismo.epub', mode='w')
@@ -218,5 +230,6 @@ saveIndex(index)
 if footnoteSeq :
     saveFootnotes(footnoteSeq)
 saveCss()
+craftOpf()
 epubZip()
 shutil.rmtree(tmpdir)
