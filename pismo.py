@@ -199,8 +199,7 @@ def epubZip():
             zf.write(os.path.join(tmpdir,filename), filename, compression)
         for filename in os.listdir(os.path.join(tmpdir,'OEBPS')):
             zf.write(os.path.join(tmpdir,'OEBPS',filename), os.path.join('OEBPS', filename), compression)
-        for filename in os.listdir(os.path.join(tmpdir,'META-INF')):
-            zf.write(os.path.join(tmpdir,'META-INF',filename), os.path.join('META-INF', filename), compression)
+        zf.write(os.path.join(tmpdir,'META-INF','container.xml'), os.path.join('META-INF', 'container.xml'), compression)
     finally:
         zf.close()
 
