@@ -193,9 +193,16 @@ def epubBuild():
 
 def craftOpf():
     file = open(os.path.join(tmpdir, 'OEBPS', 'content.opf'), 'w')
-    print>>file, '''<?xml version="1.0" encoding="UTF-8"??>
+    print>>file, '''<?xml version="1.0" encoding="UTF-8"?>
     <package xmlns="http://www.idpf.org/2007/opf" unique-identifier="BookID" version="2.0" >
         <metadata xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:opf="http://www.idpf.org/2007/opf">
+            <dc:title>Biblia Tysiąclecia - Pismo Święte Starego i Nowego Testamentu</dc:title>
+            <dc:language>pl-PL</dc:language>
+            <dc:publisher>Wydawnictwo Pallottinum w Poznaniu</dc:publisher>
+            <dc:identifier id="BookID" opf:scheme="UUID">ISBN 83-7014-218-4</dc:identifier>
+        </metadata>
+        <manifest>
+            <item id="style" href="style.css" media-type="text/css" />
     '''
     print>>file, '''    </manifest>
     <spine toc="ncx">
