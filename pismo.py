@@ -203,11 +203,18 @@ def craftOpf():
         </metadata>
         <manifest>
             <item id="style" href="style.css" media-type="text/css" />
-    '''
+            <item id="footnotes" href="footnotes.xhtml" media-type="application/xhtml+xml" />'''
+    spine=[]
+    for chapterFile,chapterCounter,bookTitle in index:
+        chapterId=chapterFile.split('.')[0]
+        file.write('            <item id="' + chapterId + '" href="' + chapterFile + '" media-type="application/xhtml+xml" />\n')
+        spine.append(chapterId)
     print>>file, '''    </manifest>
-    <spine toc="ncx">
-    '''
-    print>>file, '''</spine></package>'''
+    <spine toc="ncx">'''
+    for line in spine:
+        file.write('            <itemref idref="' + line + '" />\n')
+    print>>file, '''            <itemref idref="footnotes" />
+    </spine></package>'''
     file.close()
 
 def epubZip():
