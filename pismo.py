@@ -177,7 +177,6 @@ def getBook(index,footnoteSeq,bookNumber,bookShort):
         chapterCounter+=1
 
 def epubBuild():
-    print tmpdir
     os.mkdir(os.path.join(tmpdir,'META-INF'))
     os.mkdir(os.path.join(tmpdir,'OEBPS'))
     file = open(os.path.join(tmpdir,'mimetype'), 'w')
