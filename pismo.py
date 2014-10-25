@@ -53,7 +53,7 @@ sup {font-size: 0.83em; vertical-align: super; line-height: 0; }
 .miedzytytul3 {font-style:italic; font-size:0.8em; margin-left:-10px}
 .werset {font-weight:bold; font-size: 0.6em; }
 div.initial-letter { font-size:4.5em; line-height:0.9em; padding: 0 10px 0 0; float:left; }
-div.book-label{font-size:1.4em;}
+div.book-label{font-size:1.4em;text-align:center;}
 '''
 
 replaceStrings = (
