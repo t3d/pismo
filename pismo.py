@@ -63,6 +63,7 @@ sup {font-size: 0.83em; vertical-align: super; line-height: 0; }
 .miedzytytul3 {font-style:italic; font-size:0.8em; margin-left:-10px}
 .werset {font-weight:bold; font-size: 0.6em; }
 div.initial-letter { font-size:4.5em; line-height:0.9em; padding: 0 10px 0 0; float:left; }
+div.book-label{font-size:1.4em;text-align:center;}
 '''
 
 replaceStrings = (
@@ -93,10 +94,9 @@ replaceStrings = (
 
 
 replaceStringsFootnotes = (
-    ('a name=', 'a href='),
-    (r'otworz\.php\?skrot=(.*?)%20(.*?),', r'\1\2.xhtml#WW'),
-    (r'Kp%C5%82([0-9]{1,2}.xhtml)', r'Kp\1'),
-    (r'%C5%81(k[0-9]{1,2}.xhtml)', r'\1'),
+    (r'otworz\.php\?skrot=(.*?)%20(.*?),', r'\1.xhtml#N\2W'),
+    (r'Kp%C5%82(.xhtml)', r'Kp\1'),
+    (r'%C5%81(k.xhtml)', r'\1'),
     (r'%20([0-9]{1,2}\.xhtml)', r'\1')
 )
 
@@ -110,7 +110,7 @@ def bookContent(booknumber):
         chapters.append(bookNumber)
     return (chapters,bookName)
 
-def saveChapter(chapterNumber,chapterFile,footnoteSeq):
+def addChapter(chapterNumber,bookFile,footnoteSeq,chapterCounter):
     replaceStringsContent = (
         ('</font></font></center>', '</span>'),
         ('</font>', ''),
@@ -119,8 +119,8 @@ def saveChapter(chapterNumber,chapterFile,footnoteSeq):
         (r'(</p>)+<span', '<span'),
         (r'</span></p>', '</span>'),
         ('<br></p></font>', '</p>'),
-        (r'<a name="0*', '<a id="w'),
-        (r'/rozdzial\.php\?id=(.*?)#', r'footnotes.xhtml#'+ chapterNumber )
+        (r'<a name="0*', '<a id="N'+ str(chapterCounter)),
+        (r'/rozdzial\.php\?id=(.*?)#', r'footnotes.xhtml#'+ bookFile.split('.')[0] +'N' + str(chapterCounter))
     )
     url = masterURL + 'rozdzial.php?id=' + chapterNumber
     doc = getPage(url)
@@ -128,21 +128,19 @@ def saveChapter(chapterNumber,chapterFile,footnoteSeq):
     footnotes=(doc.xpath('.//div[@class="footnotes-content"]/p'))
     for fromPattern, toPattern in replaceStrings + replaceStringsContent:
         content = re.sub(fromPattern, toPattern, content)
-    file = open(os.path.join(tmpdir, 'OEBPS', chapterFile), 'w')
+    file = open(os.path.join(tmpdir, 'OEBPS', bookFile), 'w')
     for footnote in footnotes:
-        footnote = re.sub(r'/rozdzial\.php\?id=(.*?)#', chapterFile + r'#W',html.tostring(footnote))
+        footnote = re.sub(r'/rozdzial\.php\?id=(.*?)#WW?', bookFile +'#N' + str(chapterCounter) + 'W',html.tostring(footnote))
+        footnote = re.sub('a name="', 'a id="' + bookFile.split('.')[0] +'N' + str(chapterCounter) ,footnote)
         footnoteSeq.append(footnote)
-    file.write(xhtmlHeader + str(chapterNumber) + '</title></head><body>' + content + '</body></html>')
-    file.close()
+    return(content)
 
 def saveIndex(index):
     print 'generating INDEX...'
     indexfile = open(os.path.join(tmpdir, 'OEBPS', 'index.xhtml'), 'w')
     indexfile.write(xhtmlHeader + 'index</title></head><body>')
-    for chapterFile,chapterCounter,bookTitle in index:
-        if chapterCounter == 1 :
-            indexfile.write('<br/>' + bookTitle.encode('utf-8')  + '<br/>')
-        indexfile.write('<a href=\"' + chapterFile + '">' + str(chapterCounter) + '</a> ')
+    for bookFile,bookNumber,bookTitle in index:
+        indexfile.write('<a href=\"' + bookFile + '">' + bookTitle.encode('utf-8') + '</a>')
     indexfile.write('</body></html>')
     indexfile.close()
 
@@ -166,15 +164,20 @@ def getBook(index,footnoteSeq,bookNumber,bookShort):
     chapterNumbers,bookTitle= bookContent(bookNumber)
     print 'Working on book ' + bookTitle + '...'
     chapterCounter = 1
+    bookFile = normalizeUnicode(bookShort) + '.xhtml'
+    file = open(bookFile, 'w')
+    file.write(xhtmlHeader + bookTitle.encode('utf-8') + '</title></head><body><div class="book-label">'+ bookTitle.encode('utf-8')  + '</div>')
     for chapterNumber in chapterNumbers:
-        chapterFile = normalizeUnicode(bookShort) + str(chapterCounter) + '.xhtml'
-        saveChapter(chapterNumber,chapterFile,footnoteSeq)
-        index.append((chapterFile,chapterCounter,bookTitle))
+        content = addChapter(chapterNumber,bookFile,footnoteSeq,chapterCounter)
+        file.write(content)
         '''
         if chapterCounter == 5:
             break
         '''
         chapterCounter+=1
+    index.append((bookFile,bookNumber,bookTitle))
+    file.write('</body></html>')
+    file.close()
 
 def epubBuild():
     os.mkdir(os.path.join(tmpdir,'META-INF'))
@@ -204,10 +207,10 @@ def craftOpf():
             <item id="style" href="style.css" media-type="text/css" />
             <item id="footnotes" href="footnotes.xhtml" media-type="application/xhtml+xml" />'''
     spine=[]
-    for chapterFile,chapterCounter,bookTitle in index:
-        chapterId=chapterFile.split('.')[0]
-        file.write('            <item id="' + chapterId + '" href="' + chapterFile + '" media-type="application/xhtml+xml" />\n')
-        spine.append(chapterId)
+    for bookFile,bookNumber,bookTitle in index:
+        chapterId=bookFile.split('.')[0]
+        file.write('            <item id="' + bookNumber + '" href="' + bookFile + '" media-type="application/xhtml+xml" />\n')
+        spine.append(bookNumber)
     print>>file, '''    </manifest>
     <spine toc="ncx">'''
     for line in spine:
