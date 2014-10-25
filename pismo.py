@@ -110,7 +110,7 @@ def addChapter(chapterNumber,bookFile,footnoteSeq,chapterCounter):
         (r'(</p>)+<span', '<span'),
         (r'</span></p>', '</span>'),
         ('<br></p></font>', '</p>'),
-        (r'<a name="0*', '<a id="w'),
+        (r'<a name="0*', '<a id="N'+ str(chapterCounter)),
         (r'/rozdzial\.php\?id=(.*?)#', r'footnotes.xhtml#'+ chapterNumber )
     )
     url = masterURL + 'rozdzial.php?id=' + chapterNumber
@@ -120,7 +120,7 @@ def addChapter(chapterNumber,bookFile,footnoteSeq,chapterCounter):
     for fromPattern, toPattern in replaceStrings + replaceStringsContent:
         content = re.sub(fromPattern, toPattern, content)
     for footnote in footnotes:
-        footnote = re.sub(r'/rozdzial\.php\?id=(.*?)#', bookFile +'#N' + str(chapterCounter) + 'W',html.tostring(footnote))
+        footnote = re.sub(r'/rozdzial\.php\?id=(.*?)#WW?', bookFile +'#N' + str(chapterCounter) + 'W',html.tostring(footnote))
         footnoteSeq.append(footnote)
     return(content)
 
