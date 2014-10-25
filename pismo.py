@@ -222,11 +222,9 @@ def epubZip():
     print "zipping..."
     zf = zipfile.ZipFile('pismo.epub', mode='w')
     try:
-        for filename in os.listdir(tmpdir):
-            zf.write(os.path.join(tmpdir,filename), filename, compression)
-        for filename in os.listdir(os.path.join(tmpdir,'OEBPS')):
-            zf.write(os.path.join(tmpdir,'OEBPS',filename), os.path.join('OEBPS', filename), compression)
-        zf.write(os.path.join(tmpdir,'META-INF','container.xml'), os.path.join('META-INF', 'container.xml'), compression)
+        for root, dirs, files in os.walk(tmpdir):
+            for name in files:
+                zf.write(os.path.join(root,name),os.path.join(root.replace(tmpdir,'',1)[1:],name))
     finally:
         zf.close()
 
