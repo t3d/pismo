@@ -84,7 +84,6 @@ replaceStrings = (
 
 
 replaceStringsFootnotes = (
-    ('a name=', 'a href='),
     (r'otworz\.php\?skrot=(.*?)%20(.*?),', r'\1.xhtml#N\2W'),
     (r'Kp%C5%82(.xhtml)', r'Kp\1'),
     (r'%C5%81(k.xhtml)', r'\1'),
@@ -111,7 +110,7 @@ def addChapter(chapterNumber,bookFile,footnoteSeq,chapterCounter):
         (r'</span></p>', '</span>'),
         ('<br></p></font>', '</p>'),
         (r'<a name="0*', '<a id="N'+ str(chapterCounter)),
-        (r'/rozdzial\.php\?id=(.*?)#', r'footnotes.xhtml#'+ chapterNumber )
+        (r'/rozdzial\.php\?id=(.*?)#', r'footnotes.xhtml#'+ bookFile.split('.')[0] +'N' + str(chapterCounter))
     )
     url = masterURL + 'rozdzial.php?id=' + chapterNumber
     doc = getPage(url)
@@ -121,6 +120,7 @@ def addChapter(chapterNumber,bookFile,footnoteSeq,chapterCounter):
         content = re.sub(fromPattern, toPattern, content)
     for footnote in footnotes:
         footnote = re.sub(r'/rozdzial\.php\?id=(.*?)#WW?', bookFile +'#N' + str(chapterCounter) + 'W',html.tostring(footnote))
+        footnote = re.sub('a name="', 'a id="' + bookFile.split('.')[0] +'N' + str(chapterCounter) ,footnote)
         footnoteSeq.append(footnote)
     return(content)
 
