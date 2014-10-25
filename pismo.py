@@ -128,7 +128,6 @@ def addChapter(chapterNumber,bookFile,footnoteSeq,chapterCounter):
     footnotes=(doc.xpath('.//div[@class="footnotes-content"]/p'))
     for fromPattern, toPattern in replaceStrings + replaceStringsContent:
         content = re.sub(fromPattern, toPattern, content)
-    file = open(os.path.join(tmpdir, 'OEBPS', bookFile), 'w')
     for footnote in footnotes:
         footnote = re.sub(r'/rozdzial\.php\?id=(.*?)#WW?', bookFile +'#N' + str(chapterCounter) + 'W',html.tostring(footnote))
         footnote = re.sub('a name="', 'a id="' + bookFile.split('.')[0] +'N' + str(chapterCounter) ,footnote)
@@ -165,7 +164,7 @@ def getBook(index,footnoteSeq,bookNumber,bookShort):
     print 'Working on book ' + bookTitle + '...'
     chapterCounter = 1
     bookFile = normalizeUnicode(bookShort) + '.xhtml'
-    file = open(bookFile, 'w')
+    file = open(os.path.join(tmpdir, 'OEBPS', bookFile), 'w')
     file.write(xhtmlHeader + bookTitle.encode('utf-8') + '</title></head><body><div class="book-label">'+ bookTitle.encode('utf-8')  + '</div>')
     for chapterNumber in chapterNumbers:
         content = addChapter(chapterNumber,bookFile,footnoteSeq,chapterCounter)
