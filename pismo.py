@@ -123,7 +123,7 @@ def addChapter(bookFile,footnoteSeq,chapterCounter,chapterNumber=0,content='',fo
         content = re.sub(fromPattern, toPattern, content)
     for footnote in footnotes:
         footnote = re.sub(r'/rozdzial\.php\?id=(.*?)#WW?', bookFile +'#N' + str(chapterCounter) + 'W',html.tostring(footnote))
-        footnote = re.sub('a name="', 'a id="' + bookFile.split('.')[0] +'N' + str(chapterCounter) ,footnote)
+        footnote = re.sub('<p><a name="P([0-9]+)"></a>', '<p id="' + bookFile.split('.')[0] +'N' + str(chapterCounter) + r'P\1">' ,footnote)
         footnoteSeq.append(footnote)
     return(content)
 
