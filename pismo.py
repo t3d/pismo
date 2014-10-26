@@ -104,13 +104,15 @@ def bookContent(booknumber):
     url = masterURL + 'ksiega.php?id=' + booknumber
     doc = getPage(url)
     chapters =[]
+    content=html.tostring(doc.xpath('.//div[@class="tresc"]')[0])
+    footnotes=(doc.xpath('.//div[@class="footnotes-content"]/p'))
     bookName = doc.xpath('//div[@class="book-label"]/text()')[0]
     for data in doc.xpath('//select[@name="rozdzial"]/option'):
         bookNumber=''.join(data.xpath('./@value'))
         chapters.append(bookNumber)
-    return (chapters,bookName)
+    return (chapters[1:],bookName,content,footnotes)
 
-def addChapter(chapterNumber,bookFile,footnoteSeq,chapterCounter):
+def addChapter(bookFile,footnoteSeq,chapterCounter,chapterNumber=0,content='',footnotes=''):
     replaceStringsContent = (
         ('</font></font></center>', '</span>'),
         ('</font>', ''),
@@ -122,15 +124,16 @@ def addChapter(chapterNumber,bookFile,footnoteSeq,chapterCounter):
         (r'<a name="0*', '<a id="N'+ str(chapterCounter)),
         (r'/rozdzial\.php\?id=(.*?)#', r'footnotes.xhtml#'+ bookFile.split('.')[0] +'N' + str(chapterCounter))
     )
-    url = masterURL + 'rozdzial.php?id=' + chapterNumber
-    doc = getPage(url)
-    content=html.tostring(doc.xpath('.//div[@class="tresc"]')[0])
-    footnotes=(doc.xpath('.//div[@class="footnotes-content"]/p'))
+    if not content:
+        url = masterURL + 'rozdzial.php?id=' + chapterNumber
+        doc = getPage(url)
+        content=html.tostring(doc.xpath('.//div[@class="tresc"]')[0])
+        footnotes=(doc.xpath('.//div[@class="footnotes-content"]/p'))
     for fromPattern, toPattern in replaceStrings + replaceStringsContent:
         content = re.sub(fromPattern, toPattern, content)
     for footnote in footnotes:
         footnote = re.sub(r'/rozdzial\.php\?id=(.*?)#WW?', bookFile +'#N' + str(chapterCounter) + 'W',html.tostring(footnote))
-        footnote = re.sub('a name="', 'a id="' + bookFile.split('.')[0] +'N' + str(chapterCounter) ,footnote)
+        footnote = re.sub('<p><a name="P([0-9]+)"></a>', '<p id="' + bookFile.split('.')[0] +'N' + str(chapterCounter) + r'P\1">' ,footnote)
         footnoteSeq.append(footnote)
     return(content)
 
@@ -160,15 +163,15 @@ def saveCss():
     cssfile.close()
 
 def getBook(index,footnoteSeq,bookNumber,bookShort):
-    chapterNumbers,bookTitle= bookContent(bookNumber)
+    chapterNumbers,bookTitle,content,footnotes = bookContent(bookNumber)
     print 'Working on book ' + bookTitle + '...'
-    chapterCounter = 1
     bookFile = normalizeUnicode(bookShort) + '.xhtml'
     file = open(os.path.join(tmpdir, 'OEBPS', bookFile), 'w')
     file.write(xhtmlHeader + bookTitle.encode('utf-8') + '</title></head><body><div class="book-label">'+ bookTitle.encode('utf-8')  + '</div>')
+    file.write(addChapter(bookFile,footnoteSeq,1,content=content,footnotes=footnotes))
+    chapterCounter = 2
     for chapterNumber in chapterNumbers:
-        content = addChapter(chapterNumber,bookFile,footnoteSeq,chapterCounter)
-        file.write(content)
+        file.write(addChapter(bookFile,footnoteSeq,chapterCounter,chapterNumber=chapterNumber))
         '''
         if chapterCounter == 5:
             break
